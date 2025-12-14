@@ -53,6 +53,7 @@ def train(dataset_names: List[Path], tracker: Optional[ProgressTracker] = None):
 
     training_settings = TrainingSettings(
         epochs=50,
+        # epochs=10,
         batch_size=4,
         learning_rate=1e-2,
         early_stopping=False,
