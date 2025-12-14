@@ -46,7 +46,7 @@ class Main:
         )
         self._prediction_frame.pack(side=tk.RIGHT)
         self._predictor: Optional[Predictor] = None
-        self._prediction_interval = 250  # ms
+        self._prediction_interval = 400 #250  # ms
         self._last_prediction = time()
 
         main_frame.pack(fill=tk.BOTH, expand=True)
