@@ -101,19 +101,15 @@ class RealsenseCamera(Camera):
         device = self._pipeline_profile.get_device()
         depth_sensor: rs.sensor = device.first_depth_sensor()
 
-#################### 변경 ####################
         # depth sensor settings
         depth_sensor.set_option(rs.option.laser_power, 100)
-#################### 변경 ####################
 
-#################### 기존 ####################
         # # D455-specific configuration
         # depth_sensor.set_option(rs.option.emitter_enabled, 1)
 
         # # exposure & gain (you can tune these)
         # depth_sensor.set_option(rs.option.exposure, 33000)
         # depth_sensor.set_option(rs.option.gain, 16)
-#################### 기존 ####################
 
     def start(self) -> None:
         """
