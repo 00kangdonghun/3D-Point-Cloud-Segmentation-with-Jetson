@@ -1,5 +1,7 @@
 # 3D-Point-Cloud-Segmentation-with-Jetson
-(수정하기)
+# (수정하기)
+![count_demo](https://github.com/user-attachments/assets/e74c84b4-d829-4874-ad51-2af1992a9655)
+
 This repository contains a tool to train/test models on 3d point cloud segmentation. It is specifically focussed on recongnizing points on a point cloud eg fingertips.
 The segementation is done by RandLa-Net. The implementation was based on this repository: [https://github.com/aRI0U/RandLA-Net-pytorch](https://github.com/aRI0U/RandLA-Net-pytorch)
 
