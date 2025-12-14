@@ -104,7 +104,7 @@ class VispyView:
 
     @point_cloud.setter
     def point_cloud(self, value: np.array) -> None:
-        self._point_cloud.set_data(value-self._offset, size=0.001, face_color="red")
+        self._point_cloud.set_data(value-self._offset, size=0.001, face_color="cyan") # red
         self.annotation = None
 
     @property
