@@ -3,7 +3,7 @@ from pyrealsense2 import pyrealsense2 as rs
 
 from camera.base_camera import Camera
 
-
+'''
 class RealsenseCamera(Camera):
     def __init__(
             self,
@@ -39,6 +39,41 @@ class RealsenseCamera(Camera):
 
         if device_product_line != "L500":
             raise Exception("Expected an L515 camera")
+'''
+class RealsenseCamera(Camera):
+    def __init__(self, name: str, device_serial: str):
+        super().__init__(name)
+
+        self._realsense_config = rs.config()
+        self._context = rs.context()
+        self._pipeline = rs.pipeline(self._context)
+        self._serial = device_serial
+
+        # enable the D455 device via serial
+        self._realsense_config.enable_device(device_serial)
+
+        # D455 depth stream (recommended: 848x480 @ 30 fps)
+        self._realsense_config.enable_stream(
+            rs.stream.depth, 848, 480, rs.format.z16, 60
+        )
+
+        # filters
+        self._temporal_filter = rs.temporal_filter(0.33, 100, 0)
+        self.pc_process = rs.pointcloud()
+
+        # resolve pipeline
+        pipeline_wrapper = rs.pipeline_wrapper(self._pipeline)
+        self._pipeline_profile = self._realsense_config.resolve(pipeline_wrapper)
+
+        # Validate that the device is D455 (D400 product line)
+        device = self._pipeline_profile.get_device()
+        device_product_line = str(device.get_info(rs.camera_info.product_line))
+
+        if device_product_line != "D400":
+            raise Exception(f"Expected a D455 camera (D400 line), got: {device_product_line}")
+
+        print("D455 camera successfully initialized.")
+
 
     @property
     def serial(self) -> str:
@@ -50,17 +85,35 @@ class RealsenseCamera(Camera):
 
         z_mean = np.mean(non_zeros[:, 2])
         return z_mean < 2
+# '''
+#     def _configure_device(self) -> None:
+#         device = self._pipeline_profile.get_device()
+#         depth_sensor: rs.sensor = device.first_depth_sensor()
 
+#         # depth sensor settings
+#         depth_sensor.set_option(rs.option.min_distance, 0)
+#         depth_sensor.set_option(rs.option.digital_gain, 1.0)
+#         depth_sensor.set_option(rs.option.laser_power, 100)
+#         depth_sensor.set_option(rs.option.receiver_gain, 9)
+#         depth_sensor.set_option(rs.option.noise_filtering, 6)
+# '''
     def _configure_device(self) -> None:
         device = self._pipeline_profile.get_device()
         depth_sensor: rs.sensor = device.first_depth_sensor()
 
+#################### 변경 ####################
         # depth sensor settings
-        depth_sensor.set_option(rs.option.min_distance, 0)
-        depth_sensor.set_option(rs.option.digital_gain, 1.0)
         depth_sensor.set_option(rs.option.laser_power, 100)
-        depth_sensor.set_option(rs.option.receiver_gain, 9)
-        depth_sensor.set_option(rs.option.noise_filtering, 6)
+#################### 변경 ####################
+
+#################### 기존 ####################
+        # # D455-specific configuration
+        # depth_sensor.set_option(rs.option.emitter_enabled, 1)
+
+        # # exposure & gain (you can tune these)
+        # depth_sensor.set_option(rs.option.exposure, 33000)
+        # depth_sensor.set_option(rs.option.gain, 16)
+#################### 기존 ####################
 
     def start(self) -> None:
         """
@@ -115,6 +168,8 @@ class RealsenseCamera(Camera):
 
         # filter z
         filter = np.bitwise_and(points[:, 2] < 0.6, 0.05 < points[:, 2])
+
+        # filter = np.bitwise_and(points[:, 2] < 1.2, 0.05 < points[:, 2])
         points1 = points[filter]
 
         if not self._validate_point_cloud(points1):
