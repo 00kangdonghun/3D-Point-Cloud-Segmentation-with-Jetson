@@ -78,6 +78,7 @@ Residual + MLP를 통한 Feature Update
 
 - face
 <img width="1074" height="509" alt="{E34B79F6-C6BF-4D28-A2D8-192165A0BEEE}" src="https://github.com/user-attachments/assets/bc8c7a3f-9294-4c40-9dcb-b7877b788c79" />
+
 Failure Analysis (Face Dataset)
 
 Dataset 수 부족 
